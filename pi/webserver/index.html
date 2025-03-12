@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bison Pullers Tractor Data</title>
+        <style>
+.live-charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+        </style>
+    </head>
+    <body>
+        <h1>Live Tractor Data</h1>
+        <hr/>
+        <div class="live-charts">
+            <div class="live-chart">
+                <h3>Sound Levels</h3>
+                <canvas id="soundChart"></canvas>
+            </div>
+            <div class="live-chart">
+                <h3>Emissions Levels</h3>
+                <canvas id="emissionsChart"></canvas>
+            </div>
+            <div class="live-chart">
+                <h3>Temperature Levels</h3>
+                <canvas id="tempChart"></canvas>
+            </div>
+            <div class="live-chart">
+                <h3>RPM</h3>
+                <canvas id="rpmChart"></canvas>
+            </div>
+        </div>
+        <hr/>
+        <div>
+            <h1>Recording</h1>
+            <div>
+                <input type="number" id="recoding-seconds" value="60" min="1" placeholder="Seconds">
+                <button id="recording-start">Start Recording</button>
+            </div>
+            <button id="recording-stop" disabled>Stop Recording</button>
+            <div id="recording-charts"></div>
+        </div>
+    </body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="scripts.js" defer></script>
