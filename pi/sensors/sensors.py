@@ -1,40 +1,54 @@
 import time
-import sqlite3
+import psycopg2
 import serial
 from w1thermsensor import W1ThermSensor
 
-# Database setup
-DB_NAME = "../data.db"
+# PostgreSQL Database Configuration
+DB_CONFIG = {
+    "dbname": "data",
+    "user": "local",
+    "password": "local",
+    "host": "localhost",
+    "port": 5432
+}
 
 def init_db():
-    """Initialize the SQLite database and create the necessary table if it doesn't exist."""
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS data (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Sound_Engine REAL,
-        Sound_Operator REAL,
-        Emissions_Engine REAL,
-        Emissions_Operator REAL,
-        Temp_Engine REAL,
-        Temp_Exhaust REAL,
-        RPM INTEGER
-    )
-    """)
-    conn.commit()
-    conn.close()
+    """Initialize the PostgreSQL database and create the necessary table if it doesn't exist."""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS data (
+            id SERIAL PRIMARY KEY,
+            Sound_Engine REAL,
+            Sound_Operator REAL,
+            Emissions_Engine REAL,
+            Emissions_Operator REAL,
+            Temp_Engine REAL,
+            Temp_Exhaust REAL,
+            RPM INTEGER
+        )
+        """)
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except psycopg2.Error as e:
+        print(f"Database initialization error: {e}")
 
 def save_to_db(data):
-    """Save aggregated data to the SQLite database."""
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO data (Sound_Engine, Sound_Operator, Emissions_Engine, Emissions_Operator, Temp_Engine, Temp_Exhaust, RPM)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    """, data)
-    conn.commit()
-    conn.close()
+    """Save aggregated data to the PostgreSQL database."""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO data (Sound_Engine, Sound_Operator, Emissions_Engine, Emissions_Operator, Temp_Engine, Temp_Exhaust, RPM)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, data)
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except psycopg2.Error as e:
+        print(f"Database insert error: {e}")
 
 def get_temp_data():
     """Get temperature data from all available W1 sensors."""
@@ -45,13 +59,12 @@ def get_temp_data():
 def get_arduino_data(arduino_serial):
     """Read a line from the Arduino and parse it into a list of integers."""
     arduino_serial.write(b'\x00')
-    data = arduino_serial.readline()
-    data = data[:-1];
-    int_list = []
+    data = arduino_serial.readline().strip()
     
     if len(data) % 2 != 0:
         return []  # Malformed data
 
+    int_list = []
     for i in range(0, len(data), 2):
         high_byte = data[i]
         low_byte = data[i + 1]
@@ -104,7 +117,7 @@ def main():
             time.sleep(0.01)  # 10ms delay
 
         except Exception as e:
-            raise e
+            print(f"Error: {e}")
 
 if __name__ == "__main__":
     main()
