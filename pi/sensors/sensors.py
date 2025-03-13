@@ -1,12 +1,7 @@
 import time
 import sqlite3
 import serial
-from w1thermsensor import W1ThermSensor
-
-# Initialize Serial Connection
-arduino_serial = serial.Serial('/dev/ttyACM0',
-                               baudrate=19200,
-                               timeout=1)
+#from w1thermsensor import W1ThermSensor
 
 # Database setup
 DB_NAME = "../data.db"
@@ -35,7 +30,7 @@ def save_to_db(data):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO sensor_data (timestamp, sound_engine, sound_operator, emissions_engine, emissions_operator temp_engine, temp_exhaust, rpm)
+        INSERT INTO data (Sound_Engine, Sound_Operator, Emissions_Engine, Emissions_Operator, Temp_Engine, Temp_Exhaust, RPM)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     """, data)
     conn.commit()
@@ -47,9 +42,9 @@ def get_temp_data():
         return [0, 0]
     return [sensor.get_temperature() for sensor in W1ThermSensor.get_available_sensors()]
 
-def get_arduino_data():
+def get_arduino_data(arduino_serial):
     """Read a line from the Arduino and parse it into a list of integers."""
-    arduino_serial.write(0)
+    arduino_serial.write(b'\x00')
     data = arduino_serial.readline()
     data = data[:-1];
     int_list = []
@@ -76,14 +71,17 @@ def aggregate_data(sensor_buffer):
 
 def main():
     init_db()
+
+    # Initialize Serial Connection
+    arduino_serial = serial.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
     
     sensor_buffer = []  # Store 100 readings (10ms * 100 = 1s)
     last_save_time = time.time()
     
     while True:
         try:
-            temp_data = get_temp_data()  # Returns a list [temp1, temp2]
-            arduino_data = get_arduino_data()  # Returns a list [sensor1, sensor2, sensor3, ...]
+            temp_data = [0, 0] #get_temp_data()  # Returns a list [temp1, temp2]
+            arduino_data = get_arduino_data(arduino_serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
             rpm_data = get_rpm_data()  # Single integer
             
             if len(temp_data) != 2 or len(arduino_data) != 4:
@@ -97,8 +95,7 @@ def main():
                 if sensor_buffer:
                     # Aggregate and store in the database
                     aggregated = aggregate_data(sensor_buffer)
-                    timestamp = int(time.time())  # Unix timestamp
-                    save_to_db([timestamp] + aggregated)
+                    save_to_db(aggregated)
 
                     # Reset buffer
                     sensor_buffer = []
