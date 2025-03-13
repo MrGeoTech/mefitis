@@ -5,9 +5,8 @@ from w1thermsensor import W1ThermSensor
 
 # Initialize Serial Connection
 arduino_serial = serial.Serial('/dev/ttyACM0',
-                               baudrate=9600,
-                               parity=serial.PARITY_NONE,
-                               stopbits=serial.STOPBITS_ONE)
+                               baudrate=19200,
+                               timeout=1)
 
 # Database setup
 DB_NAME = "../data.db"
