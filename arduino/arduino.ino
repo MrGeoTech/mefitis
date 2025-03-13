@@ -4,7 +4,7 @@ const int sample_ports_length = 4;
 const int sample_ports[] = { A0, A1, A2, A3 };
 
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(9600);
     Serial.write("start\n");
 }
 
