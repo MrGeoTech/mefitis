@@ -1,17 +1,14 @@
 #!/bin/bash
 
-# Set NIX_PATH for nix-shell
-export NIX_PATH=nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
-
 # Start sensors/measurements.py inside its shell.nix environment
 pushd sensors > /dev/null
-nix-shell --run "python3 measurements.py" &
+nix-shell -I --run "run.sh" &
 SENSOR_PID=$!
 popd > /dev/null
 
 # Start webserver/webserver.js inside its shell.nix environment
 pushd webserver > /dev/null
-nix-shell --run "deno run --allow-net webserver.js" &
+nix-shell -I --run "run.sh" &
 WEBSERVER_PID=$!
 popd > /dev/null
 
