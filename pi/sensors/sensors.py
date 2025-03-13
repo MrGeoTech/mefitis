@@ -1,7 +1,7 @@
 import time
 import sqlite3
 import serial
-#from w1thermsensor import W1ThermSensor
+from w1thermsensor import W1ThermSensor
 
 # Database setup
 DB_NAME = "../data.db"
@@ -80,7 +80,7 @@ def main():
     
     while True:
         try:
-            temp_data = [0, 0] #get_temp_data()  # Returns a list [temp1, temp2]
+            temp_data = get_temp_data()  # Returns a list [temp1, temp2]
             arduino_data = get_arduino_data(arduino_serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
             rpm_data = get_rpm_data()  # Single integer
             
