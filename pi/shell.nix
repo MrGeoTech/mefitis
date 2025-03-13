@@ -3,12 +3,12 @@
 pkgs.mkShell {
     buildInputs = with pkgs; [
         deno
-        psycopg2
         termdbms
     ] ++ [(pkgs.python312.withPackages (ps: [
         ps.faker
         ps.w1thermsensor
         ps.pyserial
+        ps.psycopg2
     ]))];
 
     shellHook = ''
