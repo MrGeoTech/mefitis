@@ -51,7 +51,7 @@ def get_temp_data():
 def get_arduino_data():
     """Read a line from the Arduino and parse it into a list of integers."""
     data = arduino_serial.readline()
-    data.remove(data.length - 1) # Remove trailing newline
+    data = data[:-1];
     int_list = []
     
     if len(data) % 2 != 0:
