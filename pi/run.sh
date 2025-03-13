@@ -2,7 +2,7 @@
 
 # Start webserver/webserver.js inside its shell.nix environment
 pushd webserver > /dev/null
-deno run --allow-read --allow-write --allow-net webserver.ts &
+deno run --allow-env --allow-read --allow-write --allow-net webserver.ts &
 WEBSERVER_PID=$!
 popd > /dev/null
 
