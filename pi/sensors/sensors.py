@@ -5,7 +5,7 @@ from w1thermsensor import W1ThermSensor
 
 # Initialize Serial Connection
 arduino_serial = serial.Serial('/dev/ttyACM0',
-                               baudrate=115200,
+                               baudrate=9600,
                                parity=serial.PARITY_NONE,
                                stopbits=serial.STOPBITS_ONE)
 
@@ -50,11 +50,8 @@ def get_temp_data():
 
 def get_arduino_data():
     """Read a line from the Arduino and parse it into a list of integers."""
-    data = []
-    in = arduino_serial.read()
-    while in != '\n':
-        in = arduino_serial.read()
-    data.remove(data.length - 1)
+    data = arduino_serial.readline()
+    data.remove(data.length - 1) # Remove trailing newline
     int_list = []
     
     if len(data) % 2 != 0:
