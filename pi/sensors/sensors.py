@@ -6,8 +6,8 @@ from w1thermsensor import W1ThermSensor
 # PostgreSQL Database Configuration
 DB_CONFIG = {
     "dbname": "data",
-    "user": "local",
-    "password": "local",
+    "user": "postgres",
+    "password": "postgres",
     "host": "localhost",
     "port": 5432
 }

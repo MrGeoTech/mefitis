@@ -5,8 +5,8 @@ import { format } from "https://deno.land/std@0.210.0/datetime/mod.ts";
 // PostgreSQL Database Configuration
 const DB_CONFIG = {
   database: "data",
-  user: "local",
-  password: "local",
+  user: "postgres",
+  password: "postgres",
   hostname: "localhost",
   port: 5432,
 };
