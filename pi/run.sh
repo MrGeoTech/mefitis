@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# Start sensors/measurements.py inside its shell.nix environment
-pushd sensors > /dev/null
-nix-shell -I --run "run.sh" &
-SENSOR_PID=$!
-popd > /dev/null
-
 # Start webserver/webserver.js inside its shell.nix environment
 pushd webserver > /dev/null
-nix-shell -I --run "run.sh" &
+deno run --allow-read --allow-write --allow-net webserver.js &
 WEBSERVER_PID=$!
+popd > /dev/null
+
+# Start sensors/measurements.py inside its shell.nix environment
+pushd sensors > /dev/null
+python sensors.py &
+SENSOR_PID=$!
 popd > /dev/null
 
 # Function to clean up on exit

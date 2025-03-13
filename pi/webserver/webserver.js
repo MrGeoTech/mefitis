@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.214.0/http/server.ts";
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 import { format } from "https://deno.land/std@0.210.0/datetime/mod.ts";
 
-const db = new DB("data.db");
+const db = new DB("../data.db");
 db.execute(`CREATE TABLE IF NOT EXISTS data (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     Sound_Engine REAL,

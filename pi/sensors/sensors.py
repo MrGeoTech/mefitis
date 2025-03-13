@@ -10,7 +10,7 @@ arduino_serial = serial.Serial('/dev/ttyACM0',
                                stopbits=serial.STOPBITS_ONE)
 
 # Database setup
-DB_NAME = "sensor_data.db"
+DB_NAME = "../data.db"
 
 def init_db():
     """Initialize the SQLite database and create the necessary table if it doesn't exist."""
