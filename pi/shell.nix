@@ -3,7 +3,7 @@
 pkgs.mkShell {
     buildInputs = with pkgs; [
         deno
-        sqlite
+        psycopg2
         termdbms
     ] ++ [(pkgs.python312.withPackages (ps: [
         ps.faker
