@@ -1,27 +1,33 @@
 import serial
+import time
 
-def read_serial(port: str, baudrate: int = 9600):
+def benchmark_serial(port: str, baudrate: int = 19200, duration: int = 10):
     try:
         ser = serial.Serial(port, baudrate, timeout=1)
-        print(f"Reading from {port} at {baudrate} baud...")
         
-        while True:
-            line = ser.readline().strip()  # Read a line and remove whitespace
-            if line:
-                integers = []
-                for i in range(0, len(line), 2):
-                    if i + 1 < len(line):
-                        value = (line[i] << 8) | line[i + 1]  # Combine HighByte and LowByte
-                        integers.append(str(value))
-                print(",".join(integers))
-    
+        start_time = time.time()
+        end_time = start_time + duration
+        count = 0  # Track successful send/read cycles
+
+        while time.time() < end_time:
+            ser.write(b'\x00')  # Send a zero byte
+            line = ser.readline().strip()  # Read response
+            
+            if line:  # If data is received, count it
+                count += 1
+
+        elapsed_time = time.time() - start_time
+        rate = count / elapsed_time  # Calculate cycles per second
+        print(f"Completed {count} cycles in {elapsed_time:.2f} seconds.")
+        print(f"Rate: {rate:.2f} cycles per second.")
+
     except serial.SerialException as e:
         print(f"Error: {e}")
     finally:
         if 'ser' in locals() and ser.is_open:
             ser.close()
-            print("Serial port closed.")
 
 if __name__ == "__main__":
-    port = "/dev/ttyACM0"  # Change this to match your system (e.g., COM3 on Windows)
-    read_serial(port)
+    port = "/dev/ttyACM0"  # Change this as needed (e.g., COM3 on Windows)
+    benchmark_serial(port)
+

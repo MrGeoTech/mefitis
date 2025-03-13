@@ -50,6 +50,7 @@ def get_temp_data():
 
 def get_arduino_data():
     """Read a line from the Arduino and parse it into a list of integers."""
+    arduino_serial.write(0)
     data = arduino_serial.readline()
     data = data[:-1];
     int_list = []
