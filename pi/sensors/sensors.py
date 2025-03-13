@@ -44,13 +44,17 @@ def save_to_db(data):
 
 def get_temp_data():
     """Get temperature data from all available W1 sensors."""
-    if W1ThermSensor.get_available_sensors().length == None:
+    if W1ThermSensor.get_available_sensors() == None:
         return [0, 0]
     return [sensor.get_temperature() for sensor in W1ThermSensor.get_available_sensors()]
 
 def get_arduino_data():
     """Read a line from the Arduino and parse it into a list of integers."""
-    data = arduino_serial.readline().strip()
+    data = []
+    in = arduino_serial.read()
+    while in != '\n':
+        in = arduino_serial.read()
+    data.remove(data.length - 1)
     int_list = []
     
     if len(data) % 2 != 0:
@@ -106,7 +110,7 @@ def main():
             time.sleep(0.01)  # 10ms delay
 
         except Exception as e:
-            print(f"Error: {e}")
+            raise e
 
 if __name__ == "__main__":
     main()
