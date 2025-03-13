@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Set NIX_PATH for nix-shell
+export NIX_PATH=nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
+
 # Start sensors/measurements.py inside its shell.nix environment
 pushd sensors > /dev/null
 nix-shell --run "python3 measurements.py" &
