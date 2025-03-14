@@ -1,6 +1,6 @@
 import time
 import psycopg2
-import serial
+import serial as s
 from w1thermsensor import W1ThermSensor
 
 # PostgreSQL Database Configuration
@@ -88,7 +88,7 @@ def main():
         init_db()
 
         # Initialize Serial Connection
-        serial = serial.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
+        serial = s.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
         
         sensor_buffer = []  # Store 100 readings (10ms * 100 = 1s)
         iterations = 0
