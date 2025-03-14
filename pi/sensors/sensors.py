@@ -90,7 +90,7 @@ def main():
     arduino_serial = serial.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
     
     sensor_buffer = []  # Store 100 readings (10ms * 100 = 1s)
-    last_save_time = time.time()
+    iterations = 0
     
     while True:
         try:
@@ -105,7 +105,7 @@ def main():
             sensor_buffer.append(arduino_data[:4] + [temp_data[0], temp_data[1], rpm_data])
 
             # Check if 1 second has passed
-            if time.time() - last_save_time >= 1.0:
+            if iterations == 100:
                 if sensor_buffer:
                     # Aggregate and store in the database
                     aggregated = aggregate_data(sensor_buffer)
@@ -113,9 +113,10 @@ def main():
 
                     # Reset buffer
                     sensor_buffer = []
-                    last_save_time = time.time()
+                    iterations = 0
 
             time.sleep(0.01)  # 10ms delay
+            iterations += 1
 
         except Exception as e:
             print(f"Error: {e}")
