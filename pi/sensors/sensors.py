@@ -37,6 +37,7 @@ def init_db():
 
 def save_to_db(data):
     """Save aggregated data to the PostgreSQL database."""
+    print(data)
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         cursor = conn.cursor()
