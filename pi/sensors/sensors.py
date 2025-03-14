@@ -125,7 +125,7 @@ def main():
         print(f"Error: {e}")
     finally:
         if 'serial' in locals() and serial.is_open:
-            serrial.close()
+            serial.close()
 
 if __name__ == "__main__":
     main()
