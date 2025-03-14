@@ -37,7 +37,6 @@ def init_db():
 
 def save_to_db(data):
     """Save aggregated data to the PostgreSQL database."""
-    print(data)
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         cursor = conn.cursor()
@@ -95,12 +94,10 @@ def main():
         
         while True:
             try:
-                print(iterations)
                 temp_data = get_temp_data()  # Returns a list [temp1, temp2]
                 arduino_data = get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
                 rpm_data = get_rpm_data()  # Single integer
                 
-                print(temp_data, arduino_data)
                 if len(temp_data) != 2 or len(arduino_data) != 4:
                     continue  # Skip iteration if data is incomplete
 
