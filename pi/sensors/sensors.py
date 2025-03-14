@@ -119,7 +119,7 @@ def main():
                         iterations = 0
 
                 time.sleep(0.01)  # 10ms delay
-                iterations++
+                iterations += 1
 
             except Exception as e:
                 print(f"Error: {e}")
