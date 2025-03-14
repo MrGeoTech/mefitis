@@ -95,6 +95,7 @@ def main():
         
         while True:
             try:
+                print(iterations)
                 temp_data = get_temp_data()  # Returns a list [temp1, temp2]
                 arduino_data = get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
                 rpm_data = get_rpm_data()  # Single integer
