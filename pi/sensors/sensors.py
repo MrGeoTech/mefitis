@@ -100,6 +100,7 @@ def main():
                 arduino_data = get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
                 rpm_data = get_rpm_data()  # Single integer
                 
+                print(temp_data, arduino_data)
                 if len(temp_data) != 2 or len(arduino_data) != 4:
                     continue  # Skip iteration if data is incomplete
 
@@ -118,7 +119,7 @@ def main():
                         iterations = 0
 
                 time.sleep(0.01)  # 10ms delay
-                iterations += 1
+                iterations++
 
             except Exception as e:
                 print(f"Error: {e}")
