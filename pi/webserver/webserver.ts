@@ -73,11 +73,22 @@ async function handleWebSocketMessage(socket: WebSocket, message: string) {
 async function broadcastDataUpdate() {
   try {
     const result = await client.queryObject("SELECT * FROM data ORDER BY id DESC LIMIT 60");
-    const latestData = result.rows.reverse();
+
+    // Transform rows to an array of arrays, excluding `id`
+    const latestData = result.rows.map((row) => [
+      parseFloat(row.sound_engine),
+      parseFloat(row.sound_operator),
+      parseFloat(row.emissions_engine),
+      parseFloat(row.emissions_operator),
+      parseFloat(row.temp_engine),
+      parseFloat(row.temp_exhaust),
+      parseInt(row.rpm, 10),
+    ]).reverse(); // Reverse to maintain chronological order
+
     broadcast({
       type: "data_update",
       data: latestData,
-      last_index: latestData.length ? latestData[0].id : null,
+      last_index: latestData.length ? latestData[0][0] : null, // Keep tracking index if needed
     });
   } catch (error) {
     console.error("Error fetching data:", error);
