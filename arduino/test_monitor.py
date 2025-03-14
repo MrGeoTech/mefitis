@@ -1,6 +1,23 @@
 import serial
 import time
 
+def get_arduino_data(serial):
+    """Read a line from the Arduino and parse it into a list of integers."""
+    serial.write(b'\x00')
+    data = serial.readline().strip()
+    
+    if len(data) % 2 != 0:
+        return []
+
+    int_list = []
+    for i in range(0, len(data), 2):
+        high_byte = data[i]
+        low_byte = data[i + 1]
+        int_value = (high_byte << 8) | low_byte
+        int_list.append(int_value)
+
+    return int_list
+
 def benchmark_serial(port: str, baudrate: int = 19200, duration: int = 10):
     try:
         ser = serial.Serial(port, baudrate, timeout=1)
@@ -10,8 +27,7 @@ def benchmark_serial(port: str, baudrate: int = 19200, duration: int = 10):
         count = 0  # Track successful send/read cycles
 
         while time.time() < end_time:
-            ser.write(b'\x00')  # Send a zero byte
-            line = ser.readline().strip()  # Read response
+            get_arduino_data(ser)
             
             if line:  # If data is received, count it
                 count += 1

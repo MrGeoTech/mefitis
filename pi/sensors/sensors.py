@@ -57,13 +57,13 @@ def get_temp_data():
         return [0, 0]
     return [sensor.get_temperature() for sensor in W1ThermSensor.get_available_sensors()]
 
-def get_arduino_data(arduino_serial):
+def get_arduino_data(serial):
     """Read a line from the Arduino and parse it into a list of integers."""
-    arduino_serial.write(b'\x00')
-    data = arduino_serial.readline().strip()
+    serial.write(b'\x00')
+    data = serial.readline().strip()
     
     if len(data) % 2 != 0:
-        return []  # Malformed data
+        return []
 
     int_list = []
     for i in range(0, len(data), 2):
@@ -84,42 +84,48 @@ def aggregate_data(sensor_buffer):
     return avg_data
 
 def main():
-    init_db()
+    try:
+        init_db()
 
-    # Initialize Serial Connection
-    arduino_serial = serial.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
-    
-    sensor_buffer = []  # Store 100 readings (10ms * 100 = 1s)
-    iterations = 0
-    
-    while True:
-        try:
-            temp_data = get_temp_data()  # Returns a list [temp1, temp2]
-            arduino_data = get_arduino_data(arduino_serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
-            rpm_data = get_rpm_data()  # Single integer
-            
-            if len(temp_data) != 2 or len(arduino_data) != 4:
-                continue  # Skip iteration if data is incomplete
+        # Initialize Serial Connection
+        serial = serial.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
+        
+        sensor_buffer = []  # Store 100 readings (10ms * 100 = 1s)
+        iterations = 0
+        
+        while True:
+            try:
+                temp_data = get_temp_data()  # Returns a list [temp1, temp2]
+                arduino_data = get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
+                rpm_data = get_rpm_data()  # Single integer
+                
+                if len(temp_data) != 2 or len(arduino_data) != 4:
+                    continue  # Skip iteration if data is incomplete
 
-            # Collect sensor readings
-            sensor_buffer.append(arduino_data[:4] + [temp_data[0], temp_data[1], rpm_data])
+                # Collect sensor readings
+                sensor_buffer.append(arduino_data[:4] + [temp_data[0], temp_data[1], rpm_data])
 
-            # Check if 1 second has passed
-            if iterations == 100:
-                if sensor_buffer:
-                    # Aggregate and store in the database
-                    aggregated = aggregate_data(sensor_buffer)
-                    save_to_db(aggregated)
+                # Check if 1 second has passed
+                if iterations == 100:
+                    if sensor_buffer:
+                        # Aggregate and store in the database
+                        aggregated = aggregate_data(sensor_buffer)
+                        save_to_db(aggregated)
 
-                    # Reset buffer
-                    sensor_buffer = []
-                    iterations = 0
+                        # Reset buffer
+                        sensor_buffer = []
+                        iterations = 0
 
-            time.sleep(0.01)  # 10ms delay
-            iterations += 1
+                time.sleep(0.01)  # 10ms delay
+                iterations += 1
 
-        except Exception as e:
-            print(f"Error: {e}")
+            except Exception as e:
+                print(f"Error: {e}")
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        if 'serial' in locals() and serial.is_open:
+            serrial.close()
 
 if __name__ == "__main__":
     main()
