@@ -27,9 +27,8 @@ def benchmark_serial(port: str, baudrate: int = 19200, duration: int = 10):
         count = 0  # Track successful send/read cycles
 
         while time.time() < end_time:
-            get_arduino_data(ser)
             
-            if line:  # If data is received, count it
+            if get_arduino_data(ser) != []:  # If data is received, count it
                 count += 1
 
         elapsed_time = time.time() - start_time
