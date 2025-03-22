@@ -116,6 +116,8 @@ def aggregate_data(sensor_buffer):
 def main():
     try:
         init_db()
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         # Initialize Serial Connection
         serial = s.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
