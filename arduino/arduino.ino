@@ -1,5 +1,3 @@
-//
-const int sample_rate = 100;
 const int sample_ports_length = 4;
 const int sample_ports[] = { A0, A1, A2, A3 };
 

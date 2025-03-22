@@ -1,12 +1,13 @@
 #!/bin/bash
+# NOTE: This should be run in the shell.nix environment
 
-# Start webserver/webserver.js inside its shell.nix environment
+# Start webserver/webserver.js
 pushd webserver > /dev/null
 deno run --allow-env --allow-read --allow-write --allow-net webserver.ts &
 WEBSERVER_PID=$!
 popd > /dev/null
 
-# Start sensors/measurements.py inside its shell.nix environment
+# Start sensors/measurements.py
 pushd sensors > /dev/null
 python sensors.py &
 SENSOR_PID=$!

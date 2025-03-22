@@ -2,6 +2,7 @@ import time
 import psycopg2
 import serial as s
 from w1thermsensor import W1ThermSensor
+from gpiozero import Button
 
 # PostgreSQL Database Configuration
 DB_CONFIG = {
@@ -11,6 +12,40 @@ DB_CONFIG = {
     "host": "localhost",
     "port": 5432
 }
+
+# Constants
+NUM_MAGNETS = 4  # Number of sensors/magnets
+NANOSECONDS_PER_MINUTE = 60 * 1000 * 1000 * 1000
+
+# Sensors should be wired as following:
+# TOP    -> GPIO 17 (PIN 11)
+# RIGHT  -> GPIO 27 (PIN 13)
+# BOTTOM -> GPIO 22 (PIN 15)
+# LEFT   -> GPIO 23 (PIN 16)
+SENSORS = {
+    "TOP": Button(17),
+    "RIGHT": Button(27),
+    "BOTTOM": Button(22),
+    "LEFT": Button(23)
+}
+
+# Attach the same event handler to all sensors
+for sensor in SENSORS.values():
+    sensor.when_pressed = calculate_rpm
+
+last_time = None
+rpm = 0
+
+def calculate_rpm():
+    global last_time
+    current_time = time.time_ns()
+    
+    if last_time is not None:
+        time_diff = current_time - last_time
+        if time_diff > 0:
+            rpm = (NANOSECONDS_PER_MINUTE / time_diff) / NUM_MAGNETS  # Convert to RPM
+    
+    last_time = current_time
 
 def init_db():
     """Initialize the PostgreSQL database and create the necessary table if it doesn't exist."""
@@ -73,10 +108,6 @@ def get_arduino_data(serial):
 
     return int_list
 
-def get_rpm_data():
-    """Placeholder for RPM sensor reading."""
-    return 0  # TODO: Implement RPM reading logic
-
 def aggregate_data(sensor_buffer):
     """Compute the average of collected sensor data over the past second."""
     avg_data = [sum(col) / len(col) for col in zip(*sensor_buffer)]
@@ -96,7 +127,7 @@ def main():
             try:
                 temp_data = get_temp_data()  # Returns a list [temp1, temp2]
                 arduino_data = get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
-                rpm_data = get_rpm_data()  # Single integer
+                rpm_data = rpm  # Single integer
                 
                 if len(temp_data) != 2 or len(arduino_data) != 4:
                     continue  # Skip iteration if data is incomplete

@@ -1,0 +1,12 @@
+[Unit]
+Description=Update IP address in Git repository after boot
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/pullers/mefitis/startup.sh
+WorkingDirectory=/home/pullers/mefitis/
+User=pullers
+
+[Install]
+WantedBy=multi-user.target

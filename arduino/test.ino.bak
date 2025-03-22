@@ -1,0 +1,11 @@
+const int inputPin = A0;  // Analog pin A0
+
+void setup() {
+    Serial.begin(9600);  // Initialize serial communication
+}
+
+void loop() {
+    int value = analogRead(inputPin);  // Read A0
+    Serial.println(value);  // Send value over serial
+    delay(100);  // Small delay to reduce serial spam
+}

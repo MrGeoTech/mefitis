@@ -9,6 +9,7 @@ pkgs.mkShell {
         ps.w1thermsensor
         ps.pyserial
         ps.psycopg2
+        ps.gpiozero
     ]))];
 
     shellHook = ''
