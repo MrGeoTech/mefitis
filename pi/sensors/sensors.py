@@ -30,6 +30,8 @@ SENSORS = {
     "LEFT": Button(23)
 }
 
+TEMP_SENSORS = None
+
 last_time = None
 rpm = 0
 
@@ -84,9 +86,11 @@ def save_to_db(data):
 
 def get_temp_data():
     """Get temperature data from all available W1 sensors."""
-    if W1ThermSensor.get_available_sensors() == []:
+    try:
+        if TEMP_SENSORS == None: return [0, 0]
+        return [sensor.get_temperature() for sensor in TEMP_SENSORS]
+    except Exception e:
         return [0, 0]
-    return [sensor.get_temperature() for sensor in W1ThermSensor.get_available_sensors()]
 
 def get_arduino_data(serial):
     """Read a line from the Arduino and parse it into a list of integers."""
@@ -116,6 +120,9 @@ def main():
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+        TEMP_SENSORS = W1ThermSensor.get_available_sensors()
+        if (TEMP_SENSORS == []) TEMP_SENSORS = None
 
         # Attach the same event handler to all sensors
         for sensor in SENSORS.values():
