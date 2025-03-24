@@ -173,13 +173,13 @@ async def main():
                     continue  # Skip iteration if data is incomplete
 
                 # Collect sensor readings
-                sensor_buffer.append()
+                sensor_buffer.append(sound_data + emissions_data + temp_data + [rpm])
 
                 # Check if 1 second has passed
                 if iterations == 100:
                     if sensor_buffer:
                         # Aggregate and store in the database
-                        aggregated = aggregate_data(sound_data + emissions_data + temp_data + [rpm])
+                        aggregated = aggregate_data(sensor_buffer)
                         save_to_db(aggregated)
 
                         # Reset buffer
