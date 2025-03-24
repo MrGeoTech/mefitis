@@ -116,6 +116,27 @@ def get_arduino_data(serial):
 
     return int_list
 
+def sensor_to_db(sensor_value, ref_value=50, ref_db=61, full_scale=1023):
+    """
+    Convert sensor readings to decibels using logarithmic scaling.
+
+    :param sensor_value: The raw sensor reading (0-1023)
+    :param ref_value: A known sensor value corresponding to a known dB level
+    :param ref_db: The dB level corresponding to ref_value
+    :param full_scale: The maximum sensor reading
+    :return: Estimated decibel level
+    """
+    if sensor_value <= 0:
+        return float('-inf')  # Log(0) is undefined, treat it as very low dB
+
+    # Calculate scale factor A using the reference point
+    A = ref_db / np.log10(ref_value)
+
+    # Compute the dB level for the given sensor value
+    dB = A * np.log10(sensor_value)
+    
+    return dB
+
 def aggregate_data(sensor_buffer):
     """Compute the average of collected sensor data over the past second."""
     avg_data = [sum(col) / len(col) for col in zip(*sensor_buffer)]
@@ -143,13 +164,15 @@ async def main():
         while True:
             try:
                 arduino_data = get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
+                sound_data = [sensor_to_db(arduino_data[0]), sensor_to_db([1])]
+                emissions_data = arduino_data[2:4]
                 rpm_data = rpm  # Single integer
                 
                 if len(temp_data) != 2 or len(arduino_data) != 4:
                     continue  # Skip iteration if data is incomplete
 
                 # Collect sensor readings
-                sensor_buffer.append(arduino_data[:4] + [temp_data[0], temp_data[1], rpm_data])
+                sensor_buffer.append()
 
                 # Check if 1 second has passed
                 if iterations == 100:
