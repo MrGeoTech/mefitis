@@ -88,6 +88,7 @@ def get_temp_data():
     """Get temperature data from all available W1 sensors."""
     try:
         if TEMP_SENSORS == None: return [0, 0]
+        print([sensor.get_temperature() for sensor in TEMP_SENSORS])
         return [sensor.get_temperature() for sensor in TEMP_SENSORS]
     except Exception as e:
         print(f"Temp Error: {e}")
@@ -141,7 +142,6 @@ def main():
         while True:
             try:
                 temp_data = get_temp_data()  # Returns a list [temp1, temp2]
-                print(temp_data)
                 # TODO: Uncomment
                 arduino_data = [0,0,0,0] #get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
                 rpm_data = rpm  # Single integer
