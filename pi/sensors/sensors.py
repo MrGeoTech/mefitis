@@ -87,6 +87,7 @@ def save_to_db(data):
 def get_temp_data():
     """Get temperature data from all available W1 sensors."""
     try:
+        print(temp_sensors)
         if temp_sensors == None: return [0, 0]
         print([sensor.get_temperature() for sensor in temp_sensors])
         return [sensor.get_temperature() for sensor in temp_sensors]
