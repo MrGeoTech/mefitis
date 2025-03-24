@@ -89,14 +89,13 @@ async def update_temp_data():
     global temp_data
     sensors = AsyncW1ThermSensor.get_available_sensors()
     while True:
-        new_temp_data = []
-        for sensor in sensors:
+        new_temp_data = temp_data.copy()  # Keep previous values in case of error
+        for i, sensor in enumerate(sensors):
             try:
                 temp = await sensor.get_temperature(Unit.DEGREES_C)
-                new_temp_data.append(temp)
+                new_temp_data[i] = temp
             except Exception as e:
                 print(f"Temp Sensor Error: {e}")
-                new_temp_data.append(0)  # Preserve order, set faulty sensor to 0
         temp_data = new_temp_data
         await asyncio.sleep(1)
 
