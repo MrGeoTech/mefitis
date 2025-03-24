@@ -121,8 +121,9 @@ def main():
         for sensor in SENSORS.values():
             sensor.when_pressed = calculate_rpm
 
+        # TODO: Uncomment
         # Initialize Serial Connection
-        serial = s.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
+        #serial = s.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
         
         sensor_buffer = []  # Store 100 readings (10ms * 100 = 1s)
         iterations = 0
@@ -130,7 +131,8 @@ def main():
         while True:
             try:
                 temp_data = get_temp_data()  # Returns a list [temp1, temp2]
-                arduino_data = get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
+                # TODO: Uncomment
+                arduino_data = [0,0,0,0] #get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
                 rpm_data = rpm  # Single integer
                 
                 if len(temp_data) != 2 or len(arduino_data) != 4:
