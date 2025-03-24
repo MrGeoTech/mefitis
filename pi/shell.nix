@@ -9,7 +9,7 @@ pkgs.mkShell {
         ps.w1thermsensor
         ps.pyserial
         ps.psycopg2
-        ps.lgpio # Yes I know, three gpio packages. Just need to get this done. TODO: Remove two of them
+        # Yes I know, two gpio packages. Just need to get this done. TODO: Clean up
         ps.gpiozero 
         ps.rpi-gpio
     ]))];
