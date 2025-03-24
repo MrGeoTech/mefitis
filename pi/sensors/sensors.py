@@ -5,6 +5,7 @@ import asyncio
 from w1thermsensor import AsyncW1ThermSensor, Unit
 from gpiozero import Button
 import RPi.GPIO as GPIO
+import numpy as np
 
 # PostgreSQL Database Configuration
 DB_CONFIG = {

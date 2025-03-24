@@ -12,6 +12,7 @@ pkgs.mkShell {
         # Yes I know, two gpio packages. Just need to get this done. TODO: Clean up
         ps.gpiozero 
         ps.rpi-gpio
+        ps.numpy
     ]))];
 
     shellHook = ''
