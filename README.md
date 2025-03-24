@@ -42,7 +42,7 @@ Next, make sure to update the system and then install `git` and `postgresql`.
 ```bash
 sudo apt update
 sudo apt upgrade
-sudo apt install -y git postgresql
+sudo apt install -y git postgresql libpg-dev
 sudo apt autoremove
 ```
 
@@ -66,6 +66,9 @@ You should be able to just follow the prompts and it should install nicely.
 After installing nix, restart the system.
 
 Now, download the git repo into the home folder using `git clone https://github.com/MrGeoTech/mefitis.git`.
+
+Finally, setup a python venv at `~/venv`. Make sure to add the following python packages:
+`w1thermsensor pyserial psycopg2 gpiozero RPi.GPIO`
 
 #### Running
 
