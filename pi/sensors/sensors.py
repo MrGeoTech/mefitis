@@ -1,7 +1,8 @@
 import time
 import psycopg2
 import serial as s
-from w1thermsensor import W1ThermSensor
+import asyncio
+from w1thermsensor import AsyncW1ThermSensor, Unit
 from gpiozero import Button
 import RPi.GPIO as GPIO
 
@@ -30,6 +31,7 @@ SENSORS = {
     "LEFT": Button(23)
 }
 
+temp_data = [0, 0]
 last_time = None
 rpm = 0
 
@@ -82,16 +84,17 @@ def save_to_db(data):
     except psycopg2.Error as e:
         print(f"Database insert error: {e}")
 
-def get_temp_data():
-    """Get temperature data from all available W1 sensors."""
-    try:
-        temp_sensors = W1ThermSensor.get_available_sensors()
-        if temp_sensors == []: return [0, 0]
-        print([sensor.get_temperature() for sensor in temp_sensors])
-        return [sensor.get_temperature() for sensor in temp_sensors]
-    except Exception as e:
-        print(f"Temp Error: {e}")
-        return [0, 0]
+async def update_temp_data():
+    """Asynchronously update global temperature data."""
+    global temp_data
+    sensor = AsyncW1ThermSensor()
+    while True:
+        try:
+            temp_data = await sensor.get_temperatures([Unit.DEGREES_C, Unit.DEGREES_C])
+        except Exception as e:
+            print(f"Temp Error: {e}")
+            temp_data = [0, 0]
+        await asyncio.sleep(1)
 
 def get_arduino_data(serial):
     """Read a line from the Arduino and parse it into a list of integers."""
@@ -130,12 +133,16 @@ def main():
         # Initialize Serial Connection
         #serial = s.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
         
+        asyncio.create_task(update_temp_data())
+        
         sensor_buffer = []  # Store 100 readings (10ms * 100 = 1s)
         iterations = 0
         
         while True:
             try:
-                temp_data = get_temp_data()  # Returns a list [temp1, temp2]
+                with temp_lock:
+                    current_temps = [temp_data[0], temp_data[1]]
+
                 # TODO: Uncomment
                 arduino_data = [0,0,0,0] #get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
                 rpm_data = rpm  # Single integer
@@ -144,7 +151,7 @@ def main():
                     continue  # Skip iteration if data is incomplete
 
                 # Collect sensor readings
-                sensor_buffer.append(arduino_data[:4] + [temp_data[0], temp_data[1], rpm_data])
+                sensor_buffer.append(arduino_data[:4] + [current_temps[0], current_temps[1], rpm_data])
 
                 # Check if 1 second has passed
                 if iterations == 100:
@@ -157,7 +164,7 @@ def main():
                         sensor_buffer = []
                         iterations = 0
 
-                time.sleep(0.01)  # 10ms delay
+                await asyncio.sleep(0.01)  # 10ms delay
                 iterations += 1
 
             except Exception as e:
@@ -169,4 +176,4 @@ def main():
             serial.close()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

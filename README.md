@@ -68,7 +68,7 @@ After installing nix, restart the system.
 Now, download the git repo into the home folder using `git clone https://github.com/MrGeoTech/mefitis.git`.
 
 Finally, setup a python venv at `~/venv`. Make sure to add the following python packages:
-`w1thermsensor pyserial psycopg2 gpiozero RPi.GPIO`
+`w1thermsensor[async] pyserial psycopg2 gpiozero RPi.GPIO`
 
 #### Running
 
