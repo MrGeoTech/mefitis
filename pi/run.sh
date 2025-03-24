@@ -9,7 +9,7 @@ popd > /dev/null
 
 # Start sensors/measurements.py
 pushd sensors > /dev/null
-python sensors.py &
+sudo python sensors.py &
 SENSOR_PID=$!
 popd > /dev/null
 
