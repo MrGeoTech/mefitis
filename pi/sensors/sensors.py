@@ -118,7 +118,7 @@ def aggregate_data(sensor_buffer):
     avg_data = [sum(col) / len(col) for col in zip(*sensor_buffer)]
     return avg_data
 
-def main():
+async def main():
     try:
         init_db()
 
