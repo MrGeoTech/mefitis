@@ -136,7 +136,7 @@ def sensor_to_db(sensor_value, ref_value=50, ref_db=61, full_scale=1023):
     # Compute the dB level for the given sensor value
     dB = A * np.log10(sensor_value)
     
-    return (float) dB
+    return db.item()
 
 def aggregate_data(sensor_buffer):
     """Compute the average of collected sensor data over the past second."""
