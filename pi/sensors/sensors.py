@@ -30,7 +30,7 @@ SENSORS = {
     "LEFT": Button(23)
 }
 
-TEMP_SENSORS = None
+temp_sensors = None
 
 last_time = None
 rpm = 0
@@ -87,9 +87,9 @@ def save_to_db(data):
 def get_temp_data():
     """Get temperature data from all available W1 sensors."""
     try:
-        if TEMP_SENSORS == None: return [0, 0]
-        print([sensor.get_temperature() for sensor in TEMP_SENSORS])
-        return [sensor.get_temperature() for sensor in TEMP_SENSORS]
+        if temp_sensors == None: return [0, 0]
+        print([sensor.get_temperature() for sensor in temp_sensors])
+        return [sensor.get_temperature() for sensor in temp_sensors]
     except Exception as e:
         print(f"Temp Error: {e}")
         return [0, 0]
@@ -123,10 +123,10 @@ def main():
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        TEMP_SENSORS = W1ThermSensor.get_available_sensors()
-        print(TEMP_SENSORS)
-        if TEMP_SENSORS == []: TEMP_SENSORS = None
-        print(TEMP_SENSORS)
+        temp_sensors = W1ThermSensor.get_available_sensors()
+        print(temp_sensors)
+        if temp_sensors == []: temp_sensors = None 
+        print(temp_sensors)
 
         # Attach the same event handler to all sensors
         for sensor in SENSORS.values():
