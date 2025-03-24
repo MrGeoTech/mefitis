@@ -3,6 +3,7 @@ import psycopg2
 import serial as s
 from w1thermsensor import W1ThermSensor
 from gpiozero import Button
+import RPi.GPIO as GPIO
 
 # PostgreSQL Database Configuration
 DB_CONFIG = {
