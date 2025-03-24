@@ -132,9 +132,8 @@ async def main():
         for sensor in SENSORS.values():
             sensor.when_pressed = calculate_rpm
 
-        # TODO: Uncomment
         # Initialize Serial Connection
-        #serial = s.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
+        serial = s.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)
         
         asyncio.create_task(update_temp_data())
         
@@ -143,8 +142,7 @@ async def main():
         
         while True:
             try:
-                # TODO: Uncomment
-                arduino_data = [0,0,0,0] #get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
+                arduino_data = get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
                 rpm_data = rpm  # Single integer
                 
                 if len(temp_data) != 2 or len(arduino_data) != 4:
