@@ -87,13 +87,17 @@ def save_to_db(data):
 async def update_temp_data():
     """Asynchronously update global temperature data."""
     global temp_data
-    sensor = AsyncW1ThermSensor()
+    sensors = AsyncW1ThermSensor.get_available_sensors()
     while True:
-        try:
-            temp_data = await sensor.get_temperatures([Unit.DEGREES_C, Unit.DEGREES_C])
-        except Exception as e:
-            print(f"Temp Error: {e}")
-            temp_data = [0, 0]
+        new_temp_data = []
+        for sensor in sensors:
+            try:
+                temp = await sensor.get_temperature(Unit.DEGREES_C)
+                new_temp_data.append(temp)
+            except Exception as e:
+                print(f"Temp Sensor Error: {e}")
+                new_temp_data.append(0)  # Preserve order, set faulty sensor to 0
+        temp_data = new_temp_data
         await asyncio.sleep(1)
 
 def get_arduino_data(serial):
