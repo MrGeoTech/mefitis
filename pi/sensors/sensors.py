@@ -90,6 +90,7 @@ def get_temp_data():
         if TEMP_SENSORS == None: return [0, 0]
         return [sensor.get_temperature() for sensor in TEMP_SENSORS]
     except Exception as e:
+        print(f"Temp Error: {e}")
         return [0, 0]
 
 def get_arduino_data(serial):
