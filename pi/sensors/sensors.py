@@ -179,7 +179,7 @@ async def main():
                 if iterations == 100:
                     if sensor_buffer:
                         # Aggregate and store in the database
-                        aggregated = aggregate_data(sensor_buffer)
+                        aggregated = aggregate_data(sound_data + emissions_data + temp_data + [rpm])
                         save_to_db(aggregated)
 
                         # Reset buffer
