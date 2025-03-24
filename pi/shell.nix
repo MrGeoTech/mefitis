@@ -9,7 +9,8 @@ pkgs.mkShell {
         ps.w1thermsensor
         ps.pyserial
         ps.psycopg2
-        ps.gpiozero
+        ps.gpiozero # Yes I know, two gpio packages. Just need to get this done. TODO: Remove one of them
+        ps.rpi-gpio
     ]))];
 
     shellHook = ''
