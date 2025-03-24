@@ -140,9 +140,6 @@ async def main():
         
         while True:
             try:
-                with temp_lock:
-                    current_temps = [temp_data[0], temp_data[1]]
-
                 # TODO: Uncomment
                 arduino_data = [0,0,0,0] #get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
                 rpm_data = rpm  # Single integer
@@ -151,7 +148,7 @@ async def main():
                     continue  # Skip iteration if data is incomplete
 
                 # Collect sensor readings
-                sensor_buffer.append(arduino_data[:4] + [current_temps[0], current_temps[1], rpm_data])
+                sensor_buffer.append(arduino_data[:4] + [temp_data[0], temp_data[1], rpm_data])
 
                 # Check if 1 second has passed
                 if iterations == 100:
