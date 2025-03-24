@@ -141,6 +141,7 @@ def main():
         while True:
             try:
                 temp_data = get_temp_data()  # Returns a list [temp1, temp2]
+                print(temp_data)
                 # TODO: Uncomment
                 arduino_data = [0,0,0,0] #get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
                 rpm_data = rpm  # Single integer
