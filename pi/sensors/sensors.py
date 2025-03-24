@@ -122,7 +122,7 @@ def main():
         GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         TEMP_SENSORS = W1ThermSensor.get_available_sensors()
-        if (TEMP_SENSORS == []) TEMP_SENSORS = None
+        if TEMP_SENSORS == []: TEMP_SENSORS = None
 
         # Attach the same event handler to all sensors
         for sensor in SENSORS.values():
