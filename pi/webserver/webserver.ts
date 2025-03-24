@@ -88,7 +88,7 @@ async function broadcastDataUpdate() {
     broadcast({
       type: "data_update",
       data: latestData,
-      last_index: latestData.length ? latestData[0][0] : null, // Keep tracking index if needed
+      last_index: latestData.length ? result.rows[0].id : null, // Keep tracking index if needed
     });
   } catch (error) {
     console.error("Error fetching data:", error);
