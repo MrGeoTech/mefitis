@@ -29,10 +29,6 @@ SENSORS = {
     "LEFT": Button(23)
 }
 
-# Attach the same event handler to all sensors
-for sensor in SENSORS.values():
-    sensor.when_pressed = calculate_rpm
-
 last_time = None
 rpm = 0
 
@@ -116,8 +112,13 @@ def aggregate_data(sensor_buffer):
 def main():
     try:
         init_db()
+
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+        # Attach the same event handler to all sensors
+        for sensor in SENSORS.values():
+            sensor.when_pressed = calculate_rpm
 
         # Initialize Serial Connection
         serial = s.Serial('/dev/ttyACM0', baudrate=19200, timeout=1)

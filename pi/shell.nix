@@ -15,7 +15,7 @@ pkgs.mkShell {
     ]))];
 
     shellHook = ''
-        echo "Environment initialized!"
+        echo "Dev environment initialized!"
         echo "To start, run './run.sh'"
     '';
 }
