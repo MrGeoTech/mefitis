@@ -165,12 +165,13 @@ async def main():
         while True:
             try:
                 arduino_data = get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
-                sound_data = [sensor_to_db(arduino_data[0]), sensor_to_db(arduino_data[1])]
-                emissions_data = arduino_data[2:4]
-                rpm_data = rpm  # Single integer
                 
                 if len(temp_data) != 2 or len(arduino_data) != 4:
                     continue  # Skip iteration if data is incomplete
+
+                sound_data = [sensor_to_db(arduino_data[0]), sensor_to_db(arduino_data[1])]
+                emissions_data = arduino_data[2:4]
+                rpm_data = rpm  # Single integer
 
                 # Collect sensor readings
                 sensor_buffer.append(sound_data + emissions_data + temp_data + [rpm])
