@@ -165,7 +165,7 @@ async def main():
         while True:
             try:
                 arduino_data = get_arduino_data(serial)  # Returns a list [sensor1, sensor2, sensor3, ...]
-                sound_data = [sensor_to_db(arduino_data[0]), sensor_to_db([1])]
+                sound_data = [sensor_to_db(arduino_data[0]), sensor_to_db(arduino_data[1])]
                 emissions_data = arduino_data[2:4]
                 rpm_data = rpm  # Single integer
                 
