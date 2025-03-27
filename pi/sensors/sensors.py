@@ -17,7 +17,7 @@ DB_CONFIG = {
 }
 
 # Constants
-NUM_MAGNETS = 4  # Number of sensors/magnets
+NUM_MAGNETS = 1 # 4 # Number of sensors/magnets
 NANOSECONDS_PER_MINUTE = 60 * 1000 * 1000 * 1000
 
 # Sensors should be wired as following:
@@ -27,9 +27,9 @@ NANOSECONDS_PER_MINUTE = 60 * 1000 * 1000 * 1000
 # LEFT   -> GPIO 23 (PIN 16)
 SENSORS = {
     "TOP": Button(17),
-    "RIGHT": Button(27),
-    "BOTTOM": Button(22),
-    "LEFT": Button(23)
+    #"RIGHT": Button(27),
+    #"BOTTOM": Button(22),
+    #"LEFT": Button(23)
 }
 
 temp_data = [0, 0]
