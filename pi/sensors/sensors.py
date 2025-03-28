@@ -129,6 +129,8 @@ def sensor_to_db(sensor_value, ref_value=50, ref_db=61, full_scale=1023):
     :param full_scale: The maximum sensor reading
     :return: Estimated decibel level
     """
+    sensor_value = (1024 - sensor_value) - 500
+
     if sensor_value <= 0:
         return float('-inf')  # Log(0) is undefined, treat it as very low dB
 
@@ -171,7 +173,7 @@ async def main():
                 if len(temp_data) != 2 or len(arduino_data) != 4:
                     continue  # Skip iteration if data is incomplete
 
-                sound_data = [sensor_to_db(arduino_data[0]), sensor_to_db(arduino_data[1])]
+                sound_data = arduino_data[0:2]
                 emissions_data = arduino_data[2:4]
                 rpm_data = rpm  # Single integer
 
