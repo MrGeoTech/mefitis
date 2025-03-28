@@ -46,7 +46,6 @@ def calculate_rpm():
         else:
             return # Keep last_time the same
     
-    print(last_time)
     last_time = current_time
 
 def init_db():
