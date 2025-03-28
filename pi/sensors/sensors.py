@@ -38,7 +38,7 @@ rpm = 0
 
 def calculate_rpm():
     global last_time
-    current_time = int(time.time_ns() / 1000)
+    current_time = int(time.time_ns() / 1000 / 1000)
     
     if last_time is not None:
         time_diff = current_time - last_time
