@@ -38,11 +38,11 @@ rpm = 0
 
 def calculate_rpm():
     global last_time
-    current_time = time.time_ns()
+    current_time = time.time_us()
     
     if last_time is not None:
         time_diff = current_time - last_time
-        if time_diff > 10000: # Debouncing
+        if time_diff > 100: # Debouncing
             rpm = (NANOSECONDS_PER_MINUTE / time_diff) / NUM_MAGNETS  # Convert to RPM
         else:
             return # Keep last_time the same
