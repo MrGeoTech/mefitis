@@ -17,7 +17,6 @@ DB_CONFIG = {
 }
 
 # Constants
-NUM_MAGNETS = 1 # 4 # Number of sensors/magnets
 NANOSECONDS_PER_MINUTE = 60 * 1000 * 1000 * 1000
 
 # Sensors should be wired as following:
@@ -38,12 +37,12 @@ rpm = 0
 
 def calculate_rpm():
     global last_time
-    current_time = int(time.time_ns() / 1000 / 1000)
+    current_time = int(time.time_ns() / 1000)
     
     if last_time is not None:
         time_diff = current_time - last_time
-        if time_diff > 100: # Debouncing
-            rpm = (NANOSECONDS_PER_MINUTE / time_diff) / NUM_MAGNETS  # Convert to RPM
+        if time_diff >= 10: # Debouncing
+            rpm = (NANOSECONDS_PER_MINUTE / time_diff) / len(SENSORS) # Convert to RPM
         else:
             return # Keep last_time the same
     
