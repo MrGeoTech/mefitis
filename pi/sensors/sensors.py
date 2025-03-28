@@ -45,6 +45,7 @@ def calculate_rpm():
         if time_diff > 0:
             rpm = (NANOSECONDS_PER_MINUTE / time_diff) / NUM_MAGNETS  # Convert to RPM
     
+    print(last_time)
     last_time = current_time
 
 def init_db():
