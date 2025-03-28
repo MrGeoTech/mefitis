@@ -129,8 +129,7 @@ async function stopRecording(socket: WebSocket, startIndex: number | null) {
   try {
     const result = await client.queryObject(
       "SELECT * FROM data WHERE id >= $1 AND id <= $2",
-      startIndex,
-      recordingEndIndex
+      [startIndex, recordingEndIndex]
     );
 
     const csvContent = [
