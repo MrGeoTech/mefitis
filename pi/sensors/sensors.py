@@ -17,7 +17,7 @@ DB_CONFIG = {
 }
 
 # Constants
-NANOSECONDS_PER_MINUTE = 60 * 1000 * 1000 * 1000
+MICROSECONDS_PER_MINUTE = 60 * 1000 * 1000
 
 # Sensors should be wired as following:
 # TOP    -> GPIO 17 (PIN 11)
@@ -43,7 +43,7 @@ def calculate_rpm():
     if last_time is not None:
         time_diff = current_time - last_time
         if time_diff >= 10: # Debouncing
-            rpm = (NANOSECONDS_PER_MINUTE / time_diff) / len(SENSORS) # Convert to RPM
+            rpm = (MICROSECONDS_PER_MINUTE / time_diff) / len(SENSORS) # Convert to RPM
         else:
             return # Keep last_time the same
     
