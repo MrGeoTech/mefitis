@@ -1,26 +1,56 @@
-import time
-import os
-from gpiozero import Button
+import asyncio
+import pyaudio
+import numpy as np
 
-# Define RPM sensors
-SENSORS = {
-    "TOP": Button(17, pull_up=True),
-    "RIGHT": Button(27, pull_up=True),
-    "BOTTOM": Button(22, pull_up=True),
-    "LEFT": Button(23, pull_up=True)
-}
+# Global array to store decibel values
+decibel_values = []
 
-def display_sensors():
-    """ Continuously display the current state of all RPM sensors. """
+async def get_decibels(rate=44100, chunk=1024):
+    global decibel_values
+    
+    p = pyaudio.PyAudio()
+    stream = p.open(format=pyaudio.paInt16,
+                    channels=2,
+                    rate=rate,
+                    input=True,
+                    frames_per_buffer=chunk)
+    
     try:
         while True:
-            os.system('clear')  # Use 'cls' on Windows
-            for name, sensor in SENSORS.items():
-                state = "TRIGGERED" if sensor.is_pressed else "NOT TRIGGERED"
-                print(f"{name}: {state}")
-            time.sleep(0.01)  # Update as fast as possible
+            data = await asyncio.to_thread(stream.read, chunk)
+            audio_data = np.frombuffer(data, dtype=np.int16)
+            
+            # Separate left and right channels
+            left_channel = audio_data[::2]
+            right_channel = audio_data[1::2]
+            
+            # Compute RMS and convert to decibels
+            left_rms = np.sqrt(np.mean(left_channel**2))
+            right_rms = np.sqrt(np.mean(right_channel**2))
+            
+            left_db = 20 * np.log10(left_rms + 1e-6)  # Avoid log(0)
+            right_db = 20 * np.log10(right_rms + 1e-6)
+            
+            decibel_values.append((left_db, right_db))
+            await asyncio.sleep(1)  # Update values approximately once per second
+    
+    except asyncio.CancelledError:
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
+        raise
+
+async def main():
+    task = asyncio.create_task(get_decibels())
+    try:
+        while True:
+            if decibel_values:
+                left_db, right_db = decibel_values[-1]
+                print(f"Left: {left_db:.2f} dB, Right: {right_db:.2f} dB")
+            await asyncio.sleep(1)
     except KeyboardInterrupt:
-        print("\nSensor monitoring stopped.")
+        task.cancel()
+        await task
 
 if __name__ == "__main__":
-    display_sensors()
+    asyncio.run(main())
