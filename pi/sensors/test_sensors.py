@@ -5,7 +5,7 @@ import numpy as np
 # Global array to store decibel values
 decibel_values = []
 
-async def get_decibels(rate=44100, chunk=1024):
+async def get_decibels(rate=48000, chunk=1024):
     global decibel_values
     
     p = pyaudio.PyAudio()
