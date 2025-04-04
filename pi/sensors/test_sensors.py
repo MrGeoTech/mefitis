@@ -25,13 +25,13 @@ async def get_decibels(rate=48000, chunk=1024):
             right_channel = audio_data[1::2]
             
             # Compute RMS and convert to decibels
-            left_rms = np.sqrt(np.mean(left_channel**2))
-            right_rms = np.sqrt(np.mean(right_channel**2))
+            #left_rms = np.sqrt(np.mean(left_channel**2))
+            #right_rms = np.sqrt(np.mean(right_channel**2))
+            #
+            #left_db = 20 * np.log10(left_rms + 1e-6)  # Avoid log(0)
+            #right_db = 20 * np.log10(right_rms + 1e-6)
             
-            left_db = 20 * np.log10(left_rms + 1e-6)  # Avoid log(0)
-            right_db = 20 * np.log10(right_rms + 1e-6)
-            
-            decibel_values.append((left_db, right_db))
+            decibel_values = [left_channel, right_channel]
             await asyncio.sleep(1)  # Update values approximately once per second
     
     except asyncio.CancelledError:
