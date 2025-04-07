@@ -5,7 +5,8 @@ import audioop
 
 p = pyaudio.PyAudio()
 WIDTH = 2
-CHANNELS = 1
+CHANNELS = 2
+PA_NONINTERLEAVED = 0x80000000
 RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
 DEVICE = p.get_default_input_device_info()['index']
 
@@ -25,7 +26,7 @@ def callback(in_data, frame_count, time_info, status):
     rms_right = audioop.rms(right, WIDTH) / 32767
     return in_data, pyaudio.paContinue
 
-stream = p.open(format=p.get_format_from_width(WIDTH),
+stream = p.open(format=p.get_format_from_width(WIDTH) | PA_NONINTERLEAVED,
                 input_device_index=DEVICE,
                 channels=CHANNELS,
                 rate=RATE,
