@@ -25,8 +25,8 @@ def callback(in_data, frame_count, time_info, status):
     left = audio_data[::2]
     right = audio_data[1::2]
 
-    data_left.append(left)
-    data_right.append(right)
+    data_left = np.append(data_left, left)
+    data_right = np.append(data_right, right)
 
     #print(left)
     #print(right)
