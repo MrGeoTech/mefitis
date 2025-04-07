@@ -20,10 +20,13 @@ def callback(in_data, frame_count, time_info, status):
     #print("-" * 20)
     # Split stereo data into left and right mono streams
     audio_data = np.frombuffer(in_data, dtype=np.int16)
+    print(audio_data)
 
     # Separate interleaved stereo channels
     left = audio_data[::2]
     right = audio_data[1::2]
+    print(left)
+    print(right)
 
     data_left = np.append(data_left, left)
     data_right = np.append(data_right, right)
