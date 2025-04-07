@@ -9,6 +9,7 @@ async def get_decibels(rate=48000, chunk=1024, device_index=None):
     global decibel_values
 
     p = pyaudio.PyAudio()
+    list_input_device(p)
     stream = p.open(format=pyaudio.paInt16,
                     channels=2,
                     rate=rate,
@@ -41,6 +42,14 @@ async def get_decibels(rate=48000, chunk=1024, device_index=None):
         stream.close()
         p.terminate()
         raise
+
+def list_input_device(p):
+    nDevices = p.get_device_count()
+    print('Found input devices:')
+    for i in range(nDevices):
+        deviceInfo = p.get_device_info_by_index(i)
+        devName = deviceInfo['name']
+        print(f"Device ID {i}: {devName}")
 
 async def main():
     try:
