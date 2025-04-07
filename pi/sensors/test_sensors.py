@@ -2,12 +2,7 @@ import asyncio
 import pyaudio
 import numpy as np
 
-# Global array to store the last second of audio values
-last_second_left = []
-last_second_right = []
-
-async def get_decibels(rate=48000, chunk=1024, device_index=1):
-    global last_second_left, last_second_right
+async def get_decibels(rate=48000, device_index=1):
 
     p = pyaudio.PyAudio()
     list_input_device(p)
@@ -16,7 +11,7 @@ async def get_decibels(rate=48000, chunk=1024, device_index=1):
                     rate=rate,
                     input=True,
                     input_device_index=device_index,
-                    frames_per_buffer=chunk)
+                    frames_per_buffer=rate)
 
     try:
         while True:
@@ -26,9 +21,6 @@ async def get_decibels(rate=48000, chunk=1024, device_index=1):
             # Separate left and right channels
             left_channel = audio_data[::2]
             right_channel = audio_data[1::2]
-
-            last_second_left.append(left_channel)
-            last_second_right.append(right_channel)
 
             if len(last_second_left) >= rate:
                 # Compute RMS and convert to decibels
@@ -40,7 +32,7 @@ async def get_decibels(rate=48000, chunk=1024, device_index=1):
 
                 print(f"Left: {left_db:.2f} dB, Right: {right_db:.2f} dB")
 
-            await asyncio.sleep(rate / chunk)  # Update values approximately once per second
+            await asyncio.sleep(1)  # Update values approximately once per second
 
     except asyncio.CancelledError:
         stream.stop_stream()
