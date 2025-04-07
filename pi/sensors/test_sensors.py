@@ -55,8 +55,7 @@ stream = p.open(format=p.get_format_from_width(WIDTH),
 stream.start_stream()
 
 while stream.is_active():
-    print(data_left)
-    print(data_right)
+    time.sleep(0.3)
 
     rms_left = calculate_rms(data_left)
     rms_right = calculate_rms(data_right)
@@ -70,8 +69,6 @@ while stream.is_active():
     print(f"Left  - RMS: {rms_left:.4f}  DB: {db_left:.2f}")
     print(f"Right - RMS: {rms_right:.4f}  DB: {db_right:.2f}")
     print("-" * 40)
-    
-    time.sleep(0.3)
 
 stream.stop_stream()
 stream.close()
