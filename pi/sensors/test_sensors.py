@@ -16,9 +16,14 @@ print(p.get_default_input_device_info())
 def callback(in_data, frame_count, time_info, status):
     global rms_left, rms_right
     print(in_data)
+    print("-" * 40)
     # Split stereo data into left and right mono streams
     left = audioop.tomono(in_data, WIDTH, 1, 0)
     right = audioop.tomono(in_data, WIDTH, 0, 1)
+
+    print(left)
+    print(right)
+    print("-" * 40)
     
     # Calculate RMS for each channel
     rms_left = audioop.rms(left, WIDTH) / 32767
