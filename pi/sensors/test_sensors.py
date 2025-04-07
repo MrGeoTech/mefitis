@@ -6,7 +6,6 @@ import audioop
 p = pyaudio.PyAudio()
 WIDTH = 2
 CHANNELS = 2
-PA_NONINTERLEAVED = 0x80000000
 RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
 DEVICE = p.get_default_input_device_info()['index']
 
@@ -17,17 +16,16 @@ print(p.get_default_input_device_info())
 def callback(in_data, frame_count, time_info, status):
     global rms_left, rms_right
     print(in_data)
-    print("-" * 20)
     # Split stereo data into left and right mono streams
-    left = in_data[0]
-    right = in_data[1]
+    left = audioop.tomono(in_data, WIDTH, 1, 0)
+    right = audioop.tomono(in_data, WIDTH, 0, 1)
     
     # Calculate RMS for each channel
     rms_left = audioop.rms(left, WIDTH) / 32767
     rms_right = audioop.rms(right, WIDTH) / 32767
     return in_data, pyaudio.paContinue
 
-stream = p.open(format=p.get_format_from_width(WIDTH) | PA_NONINTERLEAVED,
+stream = p.open(format=p.get_format_from_width(WIDTH),
                 input_device_index=DEVICE,
                 channels=CHANNELS,
                 rate=RATE,
