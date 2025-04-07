@@ -7,7 +7,7 @@ last_second_left = []
 last_second_right = []
 
 async def get_decibels(rate=48000, chunk=1024, device_index=1):
-    global decibel_values
+    global last_second_left, last_second_right
 
     p = pyaudio.PyAudio()
     list_input_device(p)
