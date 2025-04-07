@@ -5,7 +5,7 @@ import audioop
 
 p = pyaudio.PyAudio()
 WIDTH = 2
-CHANNELS = 2
+CHANNELS = 1
 RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
 DEVICE = p.get_default_input_device_info()['index']
 
