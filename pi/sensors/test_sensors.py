@@ -19,7 +19,7 @@ async def get_decibels(rate=48000, chunk=1024, device_index=1):
 
     try:
         while True:
-            data = await asyncio.to_thread(stream.read, chunk)
+            data = await asyncio.to_thread(stream.read, chunk, exception_on_overflow=False)
             audio_data = np.frombuffer(data, dtype=np.int16)
 
             # Separate left and right channels
