@@ -1,57 +1,38 @@
-import asyncio
 import pyaudio
-import numpy as np
+import time
+from math import log10
+import audioop  
 
-async def get_decibels(rate=48000, device_index=1):
+p = pyaudio.PyAudio()
+WIDTH = 2
+RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
+DEVICE = p.get_default_input_device_info()['index']
+rms = 1
+print(p.get_default_input_device_info())
 
-    p = pyaudio.PyAudio()
-    list_input_device(p)
-    stream = p.open(format=pyaudio.paInt16,
-                    channels=2,
-                    rate=rate,
-                    input=True,
-                    input_device_index=device_index,
-                    frames_per_buffer=rate)
+def callback(in_data, frame_count, time_info, status):
+    global rms
+    rms = audioop.rms(in_data, WIDTH) / 32767
+    return in_data, pyaudio.paContinue
 
-    try:
-        while True:
-            data = await asyncio.to_thread(stream.read, rate, exception_on_overflow=False)
-            audio_data = np.frombuffer(data, dtype=np.int16)
 
-            # Separate left and right channels
-            left_channel = audio_data[::2]
-            right_channel = audio_data[1::2]
+stream = p.open(format=p.get_format_from_width(WIDTH),
+                input_device_index=DEVICE,
+                channels=2,
+                rate=RATE,
+                input=True,
+                output=False,
+                stream_callback=callback)
 
-            # Compute RMS and convert to decibels
-            left_rms = np.sqrt(np.mean(left_channel**2))
-            right_rms = np.sqrt(np.mean(right_channel**2))
+stream.start_stream()
 
-            left_db = 20 * np.log10(left_rms + 1e-6)  # Avoid log(0)
-            right_db = 20 * np.log10(right_rms + 1e-6)
+while stream.is_active(): 
+    db = 20 * log10(rms)
+    print(f"RMS: {rms} DB: {db}") 
+    # refresh every 0.3 seconds 
+    time.sleep(0.3)
 
-            print(f"Left: {left_db:.2f} dB, Right: {right_db:.2f} dB")
+stream.stop_stream()
+stream.close()
 
-            await asyncio.sleep(1)  # Update values approximately once per second
-
-    except asyncio.CancelledError:
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
-        raise
-
-def list_input_device(p):
-    nDevices = p.get_device_count()
-    print('Found input devices:')
-    for i in range(nDevices):
-        deviceInfo = p.get_device_info_by_index(i)
-        devName = deviceInfo['name']
-        print(f"Device ID {i}: {devName}")
-
-async def main():
-    try:
-        await get_decibels()
-    except KeyboardInterrupt:
-        pass
-
-if __name__ == "__main__":
-    asyncio.run(main())
+p.terminate()
