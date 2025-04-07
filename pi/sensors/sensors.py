@@ -1,11 +1,16 @@
-import time
-import psycopg2
-import serial as s
-import asyncio
-from w1thermsensor import AsyncW1ThermSensor, Unit
 from gpiozero import Button
+from math import log10
+from w1thermsensor import AsyncW1ThermSensor, Unit
+
 import RPi.GPIO as GPIO
+import asyncio
+import audioop
 import numpy as np
+import psycopg2
+import pyaudio
+import serial as s
+import statistics
+import time
 
 # PostgreSQL Database Configuration
 DB_CONFIG = {
@@ -34,6 +39,34 @@ SENSORS = {
 temp_data = [0, 0]
 last_time = None
 rpm = 0
+
+p = pyaudio.PyAudio()
+WIDTH = 2
+CHANNELS = 2
+RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
+DEVICE = p.get_default_input_device_info()['index']
+
+db_measurements_left = []
+db_measurements_right = []
+
+def callback(in_data, frame_count, time_info, status):
+    global rms_left, rms_right
+    # Split stereo data into left and right mono streams
+    left = audioop.tomono(in_data, WIDTH, 1, 0)
+    right = audioop.tomono(in_data, WIDTH, 0, 1)
+
+    # Calculate RMS for each channel
+    rms_left = audioop.rms(left, WIDTH) / 32767
+    rms_right = audioop.rms(right, WIDTH) / 32767
+
+    # Calculate DB for each channel
+    db_left = 20 * log10(rms_left) if rms_left > 0 else -float('inf')
+    db_right = 20 * log10(rms_right) if rms_right > 0 else -float('inf')
+
+    # Append DB to global list
+    db_measurements_left.append(db_left)
+    db_measurements_right.append(db_right)
+    return in_data, pyaudio.paContinue
 
 def calculate_rpm():
     global last_time
@@ -165,6 +198,17 @@ async def main():
         
         sensor_buffer = []  # Store 100 readings (10ms * 100 = 1s)
         iterations = 0
+
+        print(p.get_default_input_device_info())
+        stream = p.open(format=p.get_format_from_width(WIDTH),
+                        input_device_index=DEVICE,
+                        channels=CHANNELS,
+                        rate=RATE,
+                        input=True,
+                        output=False,
+                        stream_callback=callback)
+        
+        stream.start_stream()
         
         while True:
             try:
@@ -173,8 +217,10 @@ async def main():
                 if len(temp_data) != 2 or len(arduino_data) != 4:
                     continue  # Skip iteration if data is incomplete
 
-                sound_data = arduino_data[0:2]
-                emissions_data = arduino_data[2:4]
+                sound_data = [statistics.mean(db_measurements_left), statistics.mean(db_measurements_right))
+                db_measurements_left = []
+                db_measurements_right = []
+                emissions_data = arduino_data[0:2]
                 rpm_data = rpm  # Single integer
 
                 # Collect sensor readings
@@ -204,3 +250,14 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+while stream.is_active():
+    print(f"Left  - RMS: {rms_left:.4f}  DB: {db_left:.2f}")
+    print(f"Right - RMS: {rms_right:.4f}  DB: {db_right:.2f}")
+    print("-" * 40)
+    time.sleep(0.3)
+
+stream.stop_stream()
+stream.close()
+p.terminate()
