@@ -22,15 +22,14 @@ async def get_decibels(rate=48000, device_index=1):
             left_channel = audio_data[::2]
             right_channel = audio_data[1::2]
 
-            if len(last_second_left) >= rate:
-                # Compute RMS and convert to decibels
-                left_rms = np.sqrt(np.mean(left_channel**2))
-                right_rms = np.sqrt(np.mean(right_channel**2))
+            # Compute RMS and convert to decibels
+            left_rms = np.sqrt(np.mean(left_channel**2))
+            right_rms = np.sqrt(np.mean(right_channel**2))
 
-                left_db = 20 * np.log10(left_rms + 1e-6)  # Avoid log(0)
-                right_db = 20 * np.log10(right_rms + 1e-6)
+            left_db = 20 * np.log10(left_rms + 1e-6)  # Avoid log(0)
+            right_db = 20 * np.log10(right_rms + 1e-6)
 
-                print(f"Left: {left_db:.2f} dB, Right: {right_db:.2f} dB")
+            print(f"Left: {left_db:.2f} dB, Right: {right_db:.2f} dB")
 
             await asyncio.sleep(1)  # Update values approximately once per second
 
