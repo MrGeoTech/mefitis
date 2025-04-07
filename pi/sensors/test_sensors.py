@@ -57,8 +57,8 @@ stream.start_stream()
 while stream.is_active():
     time.sleep(0.3)
 
-    rms_left = calculate_rms(data_left)
-    rms_right = calculate_rms(data_right)
+    rms_left = float(calculate_rms(data_left))
+    rms_right = float(calculate_rms(data_right))
 
     data_left = np.array([], dtype=np.int16)
     data_right = np.array([], dtype=np.int16)
