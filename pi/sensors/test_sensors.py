@@ -55,6 +55,9 @@ stream = p.open(format=p.get_format_from_width(WIDTH),
 stream.start_stream()
 
 while stream.is_active():
+    print(data_left)
+    print(data_right)
+
     rms_left = calculate_rms(data_left)
     rms_right = calculate_rms(data_right)
 
