@@ -226,17 +226,10 @@ async def main():
     finally:
         if 'serial' in locals() and serial.is_open:
             serial.close()
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
 
 if __name__ == "__main__":
     asyncio.run(main())
 
-
-while stream.is_active():
-    print(f"Left  - RMS: {rms_left:.4f}  DB: {db_left:.2f}")
-    print(f"Right - RMS: {rms_right:.4f}  DB: {db_right:.2f}")
-    print("-" * 40)
-    time.sleep(0.3)
-
-stream.stop_stream()
-stream.close()
-p.terminate()
