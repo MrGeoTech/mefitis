@@ -158,6 +158,7 @@ def aggregate_data(sensor_buffer):
     return avg_data
 
 async def main():
+    global db_measurements_left, db_measurements_right
     try:
         init_db()
 
