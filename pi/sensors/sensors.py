@@ -169,9 +169,9 @@ def get_average_db():
     rms_left = np.sqrt(np.mean(left_array ** 2))
     rms_right = np.sqrt(np.mean(right_array ** 2))
 
-    # Convert RMS to decibels
+    # Convert RMS to decibels (as Python floats)
     def rms_to_db(rms):
-        return 20 * np.log10(rms) if rms > 0 else float('-inf')
+        return float(20 * np.log10(rms)) if rms > 0 else float('-inf')
 
     left_db = rms_to_db(rms_left)
     right_db = rms_to_db(rms_right)
@@ -183,7 +183,6 @@ def get_average_db():
     return [left_db, right_db]
 
 async def main():
-    global db_measurements_left, db_measurements_right
     try:
         init_db()
 
@@ -221,9 +220,6 @@ async def main():
                     continue  # Skip iteration if data is incomplete
 
                 sound_data = get_average_db()
-                db_measurements_left = []
-                db_measurements_right = []
-
                 emissions_data = arduino_data[2:4]
                 rpm_data = rpm  # Single integer
 
