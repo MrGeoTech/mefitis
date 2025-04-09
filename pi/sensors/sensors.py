@@ -183,7 +183,8 @@ async def main():
                         rate=RATE,
                         input=True,
                         output=False,
-                        stream_callback=callback)
+                        stream_callback=callback,
+                        frames_per_buffer=RATE)
         
         stream.start_stream()
         
@@ -194,7 +195,7 @@ async def main():
                 if len(temp_data) != 2 or len(arduino_data) != 4:
                     continue  # Skip iteration if data is incomplete
 
-                sound_data = [statistics.mean(db_measurements_left), statistics.mean(db_measurements_right))
+                sound_data = [statistics.mean(db_measurements_left), statistics.mean(db_measurements_right)]
                 db_measurements_left = []
                 db_measurements_right = []
 
