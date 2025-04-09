@@ -60,12 +60,10 @@ def callback(in_data, frame_count, time_info, status):
     left = audio_float[::2]
     right = audio_float[1::2]
 
+    # Append DB to global list
     accum_left.extend(left)
     accum_right.extend(right)
 
-    # Append DB to global list
-    db_measurements_left.append(db_left)
-    db_measurements_right.append(db_right)
     return in_data, pyaudio.paContinue
 
 def calculate_rpm():
