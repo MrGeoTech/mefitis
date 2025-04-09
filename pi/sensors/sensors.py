@@ -226,9 +226,11 @@ async def main():
     finally:
         if 'serial' in locals() and serial.is_open:
             serial.close()
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
+        if 'stream' in locals() and stream.is_active():
+            stream.stop_stream()
+            stream.close()
+        if 'p' in locals():
+            p.terminate()
 
 if __name__ == "__main__":
     asyncio.run(main())
