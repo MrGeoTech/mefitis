@@ -212,8 +212,7 @@ async def main():
                         rate=RATE,
                         input=True,
                         output=False,
-                        stream_callback=callback,
-                        frames_per_buffer=RATE)
+                        stream_callback=callback)
         
         stream.start_stream()
         
