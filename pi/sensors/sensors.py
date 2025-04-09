@@ -46,22 +46,23 @@ CHANNELS = 2
 RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
 DEVICE = p.get_default_input_device_info()['index']
 
-db_measurements_left = []
-db_measurements_right = []
+accum_left = []
+accum_right = []
 
 def callback(in_data, frame_count, time_info, status):
-    global rms_left, rms_right
+    global accum_left, accum_right
     # Split stereo data into left and right mono streams
-    left = audioop.tomono(in_data, WIDTH, 1, 0)
-    right = audioop.tomono(in_data, WIDTH, 0, 1)
+    
+    data = stream.read(chunk_size, exception_on_overflow=False)
+    audio_data = np.frombuffer(data, dtype=np.int16)
+    audio_float = audio_data.astype(np.float32) / 32767
 
-    # Calculate RMS for each channel
-    rms_left = audioop.rms(left, WIDTH) / 32767
-    rms_right = audioop.rms(right, WIDTH) / 32767
+    # Split stereo data into left and right channels
+    left = audio_float[::2]
+    right = audio_float[1::2]
 
-    # Calculate DB for each channel
-    db_left = 20 * log10(rms_left) if rms_left > 0 else -float('inf')
-    db_right = 20 * log10(rms_right) if rms_right > 0 else -float('inf')
+    accum_left.extend(left)
+    accum_right.extend(right)
 
     # Append DB to global list
     db_measurements_left.append(db_left)
@@ -157,6 +158,33 @@ def aggregate_data(sensor_buffer):
     avg_data = [sum(col) / len(col) for col in zip(*sensor_buffer)]
     return avg_data
 
+def get_average_db():
+    global accum_left, accum_right
+
+    if not accum_left or not accum_right:
+        return [float('-inf'), float('-inf')]  # No audio data
+
+    # Convert to NumPy arrays for efficient processing
+    left_array = np.array(accum_left, dtype=np.float32)
+    right_array = np.array(accum_right, dtype=np.float32)
+
+    # Compute RMS
+    rms_left = np.sqrt(np.mean(left_array ** 2))
+    rms_right = np.sqrt(np.mean(right_array ** 2))
+
+    # Convert RMS to decibels
+    def rms_to_db(rms):
+        return 20 * np.log10(rms) if rms > 0 else float('-inf')
+
+    left_db = rms_to_db(rms_left)
+    right_db = rms_to_db(rms_right)
+
+    # Clear the accumulators
+    accum_left = []
+    accum_right = []
+
+    return [left_db, right_db]
+
 async def main():
     global db_measurements_left, db_measurements_right
     try:
@@ -196,7 +224,7 @@ async def main():
                 if len(temp_data) != 2 or len(arduino_data) != 4:
                     continue  # Skip iteration if data is incomplete
 
-                sound_data = [statistics.mean(db_measurements_left), statistics.mean(db_measurements_right)]
+                sound_data = get_average_db()
                 db_measurements_left = []
                 db_measurements_right = []
 
