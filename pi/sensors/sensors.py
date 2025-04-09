@@ -53,8 +53,7 @@ def callback(in_data, frame_count, time_info, status):
     global accum_left, accum_right
     # Split stereo data into left and right mono streams
     
-    data = stream.read(chunk_size, exception_on_overflow=False)
-    audio_data = np.frombuffer(data, dtype=np.int16)
+    audio_data = np.frombuffer(in_data, dtype=np.int16)
     audio_float = audio_data.astype(np.float32) / 32767
 
     # Split stereo data into left and right channels
