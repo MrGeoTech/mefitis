@@ -44,7 +44,7 @@ WIDTH = 2
 CHANNELS = 2
 RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
 DEVICE = p.get_default_input_device_info()['index']
-db_correction = 150.0
+db_correction = 300
 
 accum_left = []
 accum_right = []
