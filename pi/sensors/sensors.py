@@ -44,7 +44,7 @@ WIDTH = 2
 CHANNELS = 2
 RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
 DEVICE = p.get_default_input_device_info()['index']
-db_calibration = 65.0;
+max_db = 120;
 
 accum_left = []
 accum_right = []
@@ -162,8 +162,8 @@ def get_average_db():
         return [float('-inf'), float('-inf')]  # No audio data
 
     # Convert to NumPy arrays for efficient processing
-    left_array = np.array(accum_left, dtype=np.float32) * db_calibration
-    right_array = np.array(accum_right, dtype=np.float32) * db_calibration
+    left_array = np.array(accum_left, dtype=np.float32)
+    right_array = np.array(accum_right, dtype=np.float32)
 
     # Compute RMS
     rms_left = np.sqrt(np.mean(left_array ** 2))
@@ -180,7 +180,7 @@ def get_average_db():
     accum_left = []
     accum_right = []
 
-    return [left_db, right_db]
+    return [max_db + left_db, max_db + right_db]
 
 async def main():
     try:
