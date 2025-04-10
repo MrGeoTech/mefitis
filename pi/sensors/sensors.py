@@ -44,7 +44,7 @@ WIDTH = 2
 CHANNELS = 2
 RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
 DEVICE = p.get_default_input_device_info()['index']
-db_correction = 300
+db_correction = 65.0
 
 accum_left = []
 accum_right = []
@@ -162,8 +162,8 @@ def get_average_db():
         return [float('-inf'), float('-inf')]  # No audio data
 
     # Convert to NumPy arrays for efficient processing
-    left_array = np.array(accum_left, dtype=np.float32)
-    right_array = np.array(accum_right, dtype=np.float32)
+    left_array = np.array(accum_left, dtype=np.float32) * db_correction
+    right_array = np.array(accum_right, dtype=np.float32) * db_correction
 
     # Compute RMS
     rms_left = np.sqrt(np.mean(left_array ** 2))
@@ -173,8 +173,8 @@ def get_average_db():
     def rms_to_db(rms):
         return float(20 * np.log10(rms)) if rms > 0 else float('-inf')
 
-    left_db = float(rms_left) * db_correction #rms_to_db(rms_left)
-    right_db = float(rms_right) * db_correction #rms_to_db(rms_right)
+    left_db = rms_to_db(rms_left)
+    right_db = rms_to_db(rms_right)
 
     # Clear the accumulators
     accum_left = []
