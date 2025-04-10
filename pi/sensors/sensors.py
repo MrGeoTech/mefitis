@@ -162,8 +162,8 @@ def get_average_db():
         return [float('-inf'), float('-inf')]  # No audio data
 
     # Convert to NumPy arrays for efficient processing
-    left_array = np.array(accum_left, dtype=np.float32) ** db_calibration
-    right_array = np.array(accum_right, dtype=np.float32) ** db_calibration
+    left_array = np.array(accum_left, dtype=np.float32)
+    right_array = np.array(accum_right, dtype=np.float32)
 
     # Compute RMS
     rms_left = np.sqrt(np.mean(left_array ** 2))
@@ -180,7 +180,7 @@ def get_average_db():
     accum_left = []
     accum_right = []
 
-    return [left_db, right_db]
+    return [left_db + db_calibration, right_db + db_calibration]
 
 async def main():
     try:
