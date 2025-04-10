@@ -170,11 +170,11 @@ def get_average_db():
     rms_right = np.sqrt(np.mean(right_array ** 2))
 
     # Convert RMS to decibels (as Python floats)
-    def rms_to_db(rms):
-        return float(20 * np.log10(rms)) if rms > 0 else float('-inf')
+    #def rms_to_db(rms):
+    #    return float(20 * np.log10(rms)) if rms > 0 else float('-inf')
 
-    left_db = rms_to_db(rms_left)
-    right_db = rms_to_db(rms_right)
+    left_db = rms_left
+    right_db = rms_right
 
     # Clear the accumulators
     accum_left = []
