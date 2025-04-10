@@ -180,7 +180,7 @@ def get_average_db():
     accum_left = []
     accum_right = []
 
-    return [max_db + left_db, max_db + right_db]
+    return [left_db, right_db]
 
 async def main():
     try:
