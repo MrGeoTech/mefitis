@@ -4,7 +4,6 @@ from w1thermsensor import AsyncW1ThermSensor, Unit
 
 import RPi.GPIO as GPIO
 import asyncio
-import audioop
 import numpy as np
 import psycopg2
 import pyaudio
@@ -45,6 +44,7 @@ WIDTH = 2
 CHANNELS = 2
 RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
 DEVICE = p.get_default_input_device_info()['index']
+db_calibration = 65.0;
 
 accum_left = []
 accum_right = []
@@ -162,8 +162,8 @@ def get_average_db():
         return [float('-inf'), float('-inf')]  # No audio data
 
     # Convert to NumPy arrays for efficient processing
-    left_array = np.array(accum_left, dtype=np.float32)
-    right_array = np.array(accum_right, dtype=np.float32)
+    left_array = np.array(accum_left, dtype=np.float32) ** db_calibration
+    right_array = np.array(accum_right, dtype=np.float32) ** db_calibration
 
     # Compute RMS
     rms_left = np.sqrt(np.mean(left_array ** 2))
