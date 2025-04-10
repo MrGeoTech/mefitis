@@ -173,8 +173,8 @@ def get_average_db():
     def rms_to_db(rms):
         return float(20 * np.log10(rms)) if rms > 0 else float('-inf')
 
-    left_db = (1 + float(rms_left)) ** 10 #rms_to_db(rms_left)
-    right_db = (1 + float(rms_right)) ** 10 #rms_to_db(rms_right)
+    left_db = (100 * float(rms_left)) ** 10 #rms_to_db(rms_left)
+    right_db = (100 * float(rms_right)) ** 10 #rms_to_db(rms_right)
 
     # Clear the accumulators
     accum_left = []
