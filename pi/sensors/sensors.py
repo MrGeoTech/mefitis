@@ -44,7 +44,7 @@ WIDTH = 2
 CHANNELS = 2
 RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
 DEVICE = p.get_default_input_device_info()['index']
-max_db = 120;
+db_correction = 150.0
 
 accum_left = []
 accum_right = []
@@ -173,8 +173,8 @@ def get_average_db():
     def rms_to_db(rms):
         return float(20 * np.log10(rms)) if rms > 0 else float('-inf')
 
-    left_db = rms_to_db(rms_left)
-    right_db = rms_to_db(rms_right)
+    left_db = float(rms_left) * db_correction #rms_to_db(rms_left)
+    right_db = float(rms_right) * db_correction #rms_to_db(rms_right)
 
     # Clear the accumulators
     accum_left = []
